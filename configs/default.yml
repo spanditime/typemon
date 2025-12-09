@@ -1,0 +1,117 @@
+# only mm is supported for now
+units: "mm"
+
+layout:
+  rows: 5
+  cols: 4
+  pinky_extra_home: true
+
+geometry:
+  base_tilt_angle_deg: 45.0
+  tent_angle_deg: 10.0
+
+  keywell_radius_mm: 120.0
+  keywell_depth_mm: 20.0
+
+columns_geometry:
+  col_spacing_x: 18.5
+  row_spacing_y: 18.0
+
+  row_heights_mm:
+    - 6.0
+    - 4.0
+    - 2.0
+    - 1.0
+    - 0.0
+
+  # origin column is the column of index finger
+  origin_column_index: 0
+  
+  # offsets are relative to the origin column
+  per_finger:
+    pinky:
+      offset_x: -5.0
+      offset_y: 2.0
+      offset_z: 3.0
+      tilt_x_deg: 8.0
+      tilt_y_deg: 12.0
+      splay_deg: 5.0
+    ring:
+      offset_x: -2.0
+      offset_y: 1.0
+      offset_z: 2.0
+      tilt_x_deg: 6.0
+      tilt_y_deg: 8.0
+      splay_deg: 3.0
+    middle:
+      offset_x: 0.0
+      offset_y: 0.0
+      offset_z: 0.0
+      tilt_x_deg: 4.0
+      tilt_y_deg: 5.0
+      splay_deg: 2.0
+    index:
+      offset_x: 3.0
+      offset_y: -1.0
+      offset_z: -1.0
+      tilt_x_deg: 2.0
+      tilt_y_deg: 0.0
+      splay_deg: 0.0
+
+thumb_clusters:
+  thumb_plane_angle_deg: 90.0
+  thumb_plane_tilt_deg: 10.0
+
+  origin_column_index: 3
+  offset_x: 30.0
+  offset_y: -35.0
+  offset_z: -5.0
+
+
+  keys:
+    - id: "thumb_inner"
+      pos_x: -8.0
+      pos_y: 0.0
+      pos_z: 0.0
+    - id: "thumb_center"
+      pos_x: 0.0
+      pos_y: 2.0
+      pos_z: 0.0
+    - id: "thumb_outer"
+      pos_x: 8.0
+      pos_y: 4.0
+      pos_z: 0.0
+
+  left_side:
+    five_way_replaces: "thumb_center"
+    five_way_diameter_mm: 14.0
+    five_way_height_mm: 10.0
+
+trackpoint:
+  left_side:
+    # will be placed in between the origin column and next one by column_index
+    column_index: 3
+    # will be placed in between this column and the column above it by row_index
+    row_index: 0
+    enabled: true
+    offset_x: 0.0
+    offset_y: -5.0
+    offset_z: 5.0
+
+    hole_diameter_mm: 5.0
+    mount_diameter_mm: 8.0
+    mount_depth_mm: 4.0
+  right_side:
+    enabled: false
+
+pcbs:
+  # for now only choc_v1 is supported
+  switch_type: "choc_v1"
+
+render:
+  $fn: 64
+  keycap_outline: true
+  generate_left: true
+  generate_right: true
+
+
