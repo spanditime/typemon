@@ -1,4 +1,4 @@
-include <modules/matrix.scad>;
+include <lib/linear_algebra.scad>;
 
 /////////////////////////////////////////////
 /// CONFIGURATION
