@@ -2,6 +2,8 @@
 /// transformation matrices
 /////////////////////////////////////////////
 
+ZERO = [0, 0, 0];
+
 function Mx(angle) = [
     [1, 0, 0, 0],
     [0, cos(angle), -sin(angle), 0],

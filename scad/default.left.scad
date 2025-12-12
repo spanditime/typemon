@@ -1,5 +1,11 @@
 include <lib/linear_algebra.scad>;
 
+
+/////////////////////////////////////////////
+/// GENERATED INCLUDES
+/////////////////////////////////////////////
+include <modules/switches/kailh_choc.scad>;
+
 /////////////////////////////////////////////
 /// CONFIGURATION
 /////////////////////////////////////////////
@@ -12,6 +18,7 @@ include <lib/linear_algebra.scad>;
 // cols: number of columns (X direction, left to right)
 
 DEBUG = true;
+LEFT = true; // if true, the model is for the left half, if false, the model is for the right half
 
 /// TODO: tolerances should be added to the config
 /// this will allow to generate the model with different tolerances
@@ -39,12 +46,15 @@ keywell_depth_mm  = 0;
 base_tilt_angle_deg = 55.0;
 
 // Thickness of the continuous keywell plane (approximate shell under switches).
-plane_thickness_mm = 5.0;
+// shouldnt be more than the switch height
+plane_thickness_mm = 2.2;
+
 
 // Choc switch dimensions (mm).
 switch_size_x = 17.0;
 switch_size_y = 18.0;
 switch_size_z = 3.0;
+switch_size = [switch_size_x, switch_size_y, switch_size_z];
 
 support_radius_mm = 1;
 col_spacing_x = switch_size_x + support_radius_mm + 0.5;
@@ -87,6 +97,14 @@ outer_lip_size = 10;
 /// MODULES
 /////////////////////////////////////////////
 
+module mirror_if_right() {
+    if (LEFT)
+        children();
+    else
+        mirror([0, 1, 0])
+            children();
+}
+
 function sum_array(arr, index) = 
   (index < 0) ? 0 : arr[index] + sum_array(arr, index - 1);
 
@@ -95,9 +113,11 @@ function total_sum(arr) = sum_array(arr, len(arr) - 1);
 
 
 // Simple placeholder for a Choc switch position (can be replaced by real cutout later).
-module choc_switch_placeholder(size = [18, 18, 3]) {
+module switch_placeholder(size = [18, 17, 3]) {
+    // todo: add support via if statements for different switch types at once
     color("lightgray")
-        cube(size, center = true);
+        mirror_if_right()
+            kailh_choc_switch_cutout(size);
 }
 
 module five_way_placeholder(size = [18, 18, 3]) {
@@ -147,7 +167,7 @@ module keywell_switches() {
     for (c = [0 : num_cols - 1]) {
         for (r = [0 : num_rows - 1]) {
             multmatrix(M_key_main(c, r))
-                choc_switch_placeholder([switch_size_x, switch_size_y, switch_size_z]);
+                switch_placeholder(switch_size);
         }
     }
 }
@@ -346,9 +366,9 @@ module thumb_plane_switches(){
         for (key = [0 : len(thumb_keys) - 1])
             multmatrix(M_thumb_key(key))
                 if (thumb_keys[key][2] == "regular")
-                    choc_switch_placeholder([switch_size_x, switch_size_y, switch_size_z]);
+                    switch_placeholder(switch_size);
                 else if (thumb_keys[key][2] == "five_way")
-                    five_way_placeholder([switch_size_x, switch_size_y, switch_size_z]);
+                    five_way_placeholder(switch_size);
 }
 
 
@@ -464,16 +484,26 @@ module base_plane() {
 
 // Apply base tilt angle to the entire keyboard surface.
 
-multmatrix(M_base) {
-    union() {
-        union() {
-            keywell_plane();
-            thumb_plane();
+module main_body() {
+    mirror_if_right() {
+        multmatrix(M_base) {
+            difference() {
+                union() {
+                    keywell_plane();
+                    thumb_plane();
+                }
+                union() {
+                    keywell_switches();
+                    thumb_plane_switches();
+                }
+            }
+            #if (DEBUG) {
+                keywell_switches();
+                thumb_plane_switches();
+            }
         }
-        union() {
-            keywell_switches();
-            thumb_plane_switches();
-        }
+        base_plane();
     }
 }
-base_plane();
+
+main_body();
