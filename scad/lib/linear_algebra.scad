@@ -25,7 +25,7 @@ function Mz(angle) = [
     [0, 0, 0, 1]
 ];
 
-function Mrotate(r) = Mx(r[0]) * My(r[1]) * Mz(r[2]);
+function Mrotate(r) = Mz(r[2]) * Mx(r[0]) * My(r[1]);
 
 function Mtranslate(p) = [
     [1, 0, 0, p[0]],

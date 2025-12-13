@@ -14,7 +14,7 @@ module keywell_switches() {
     for (c = [0 : num_cols - 1]) {
         for (r = [0 : num_rows - 1]) {
             multmatrix(M_key_main(c, r))
-                switch_placeholder(switch_size);
+                switch_placeholder(switch_size, matrix_keys[c][r][2]);
         }
     }
 }
@@ -163,10 +163,7 @@ module thumb_plane() {
 module thumb_plane_switches(){
         for (key = [0 : len(thumb_keys) - 1])
             multmatrix(M_thumb_key(key))
-                if (thumb_keys[key][2] == "regular")
-                    switch_placeholder(switch_size);
-                else if (thumb_keys[key][2] == "five_way")
-                    five_way_placeholder(switch_size);
+                switch_placeholder(switch_size, thumb_keys[key][2]);
 }
 
 module base_plane_support_shape() {
