@@ -9,76 +9,107 @@ import (
 
 // Config описывает корневую структуру конфигурации клавиатуры.
 type Config struct {
-	Units      string          `yaml:"units"`
-	Layout     Layout          `yaml:"layout"`
-	Geometry   Geometry        `yaml:"geometry"`
-	Columns    ColumnsGeometry `yaml:"columns_geometry"`
-	Thumbs     ThumbClusters   `yaml:"thumb_clusters"`
-	Trackpoint Trackpoint      `yaml:"trackpoint"`
-	PCBs       PCBs            `yaml:"pcbs"`
-	Render     Render          `yaml:"render"`
+	Units         Units         `yaml:"units"`
+	Layout        Layout        `yaml:"layout"`
+	SwitchTypes   SwitchTypes   `yaml:"switch_types"`
+	Keywell       Keywell       `yaml:"keywell"`
+	ThumbClusters ThumbClusters `yaml:"thumb_clusters"`
+	Trackpoint    *Trackpoint   `yaml:"trackpoint,omitempty"`
+	Render        Render        `yaml:"render"`
+}
+
+type Units struct {
+	Length string `yaml:"length"`
+	Angle  string `yaml:"angle"`
 }
 
 type Layout struct {
-	Rows           int  `yaml:"rows"`
-	Cols           int  `yaml:"cols"`
-	PinkyExtraHome bool `yaml:"pinky_extra_home"`
+	Rows int `yaml:"rows"`
+	Cols int `yaml:"cols"`
 }
 
-type Geometry struct {
-	BaseTiltAngleDeg float64 `yaml:"base_tilt_angle_deg"`
-	TentAngleDeg     float64 `yaml:"tent_angle_deg"`
-
-	KeywellRadiusMM float64 `yaml:"keywell_radius_mm"`
-	KeywellDepthMM  float64 `yaml:"keywell_depth_mm"`
+type SwitchTypes struct {
+	Regular SwitchTypeConfig `yaml:"regular"`
+	FiveWay SwitchTypeConfig `yaml:"five_way"`
 }
 
-type ColumnsGeometry struct {
-	ColSpacingX       float64       `yaml:"col_spacing_x"`
-	RowSpacingY       float64       `yaml:"row_spacing_y"`
-	RowHeights        []float64     `yaml:"row_heights_mm"`
-	OriginColumnIndex int           `yaml:"origin_column_index"`
-	PerFinger         PerFingerSpec `yaml:"per_finger"`
+type SwitchTypeConfig struct {
+	Definition string                 `yaml:"definition"`
+	ExtraArgs  map[string]interface{} `yaml:"extra_args,omitempty"`
 }
 
-type PerFingerSpec struct {
-	Pinky  FingerConfig `yaml:"pinky"`
-	Ring   FingerConfig `yaml:"ring"`
-	Middle FingerConfig `yaml:"middle"`
-	Index  FingerConfig `yaml:"index"`
+type Keywell struct {
+	TiltAngle              float64          `yaml:"tilt_angle"`
+	HorizontalRadius       float64          `yaml:"horizontal_radius"`
+	VerticalRadius         float64          `yaml:"vertical_radius"`
+	CenterOffset           Offset           `yaml:"center_offset"`
+	InnerLipSize           float64          `yaml:"inner_lip_size"`
+	OuterLipSize           float64          `yaml:"outer_lip_size"`
+	IndexFingerStartColumn int              `yaml:"index_finger_start_column"`
+	Modifiers              KeywellModifiers `yaml:"modifiers"`
 }
 
-type FingerConfig struct {
-	OffsetX  float64 `yaml:"offset_x"`
-	OffsetY  float64 `yaml:"offset_y"`
-	OffsetZ  float64 `yaml:"offset_z"`
-	TiltXDeg float64 `yaml:"tilt_x_deg"`
-	TiltYDeg float64 `yaml:"tilt_y_deg"`
-	SplayDeg float64 `yaml:"splay_deg"`
+type Offset struct {
+	X float64 `yaml:"x"`
+	Y float64 `yaml:"y"`
+	Z float64 `yaml:"z"`
+}
+
+type Rotation struct {
+	X float64 `yaml:"x"`
+	Y float64 `yaml:"y"`
+	Z float64 `yaml:"z"`
+}
+
+type KeywellModifiers struct {
+	Finger  FingerModifiers           `yaml:"finger"`
+	Rows    map[int]RowColumnModifier `yaml:"rows"`
+	Columns map[int]RowColumnModifier `yaml:"columns"`
+	Matrix  []MatrixModifier          `yaml:"matrix"`
+}
+
+type FingerModifiers struct {
+	Index  FingerModifier `yaml:"index"`
+	Middle FingerModifier `yaml:"middle"`
+	Ring   FingerModifier `yaml:"ring"`
+	Pinky  FingerModifier `yaml:"pinky"`
+}
+
+type FingerModifier struct {
+	Offset Offset  `yaml:"offset"`
+	Tilt   float64 `yaml:"tilt,omitempty"`
+}
+
+type RowColumnModifier struct {
+	Offset Offset  `yaml:"offset"`
+	Tilt   float64 `yaml:"tilt"`
+}
+
+type MatrixModifier struct {
+	Column                int      `yaml:"column"`
+	Row                   int      `yaml:"row"`
+	Offset                Offset   `yaml:"offset"`
+	Rotation              Rotation `yaml:"rotation"`
+	IgnoreFingerModifiers bool     `yaml:"ignore_finger_modifiers"`
+	IgnoreColumnModifiers bool     `yaml:"ignore_column_modifiers"`
+	IgnoreRowModifiers    bool     `yaml:"ignore_row_modifiers"`
+	SwitchType            string   `yaml:"switch_type"`
 }
 
 type ThumbClusters struct {
-	ThumbPlaneAngleDeg float64      `yaml:"thumb_plane_angle_deg"`
-	ThumbPlaneTiltDeg  float64      `yaml:"thumb_plane_tilt_deg"`
-	OriginColumnIndex  int          `yaml:"origin_column_index"`
-	OffsetX            float64      `yaml:"offset_x"`
-	OffsetY            float64      `yaml:"offset_y"`
-	OffsetZ            float64      `yaml:"offset_z"`
-	Keys               []ThumbKey   `yaml:"keys"`
-	LeftSide           ThumbSideCfg `yaml:"left_side"`
+	ThumbPlaneAngleDeg float64          `yaml:"thumb_plane_angle_deg"`
+	ThumbPlaneTiltDeg  float64          `yaml:"thumb_plane_tilt_deg"`
+	OriginColumnIndex  int              `yaml:"origin_column_index"`
+	OffsetX            float64          `yaml:"offset_x"`
+	OffsetY            float64          `yaml:"offset_y"`
+	OffsetZ            float64          `yaml:"offset_z"`
+	Keys               map[int]ThumbKey `yaml:"keys"`
 }
 
 type ThumbKey struct {
-	ID   string  `yaml:"id"`
-	PosX float64 `yaml:"pos_x"`
-	PosY float64 `yaml:"pos_y"`
-	PosZ float64 `yaml:"pos_z"`
-}
-
-type ThumbSideCfg struct {
-	FiveWayReplaces   string  `yaml:"five_way_replaces"`
-	FiveWayDiameterMM float64 `yaml:"five_way_diameter_mm"`
-	FiveWayHeightMM   float64 `yaml:"five_way_height_mm"`
+	Offset   Offset   `yaml:"offset"`
+	Rotation Rotation `yaml:"rotation"`
+	Type     string   `yaml:"type"`
 }
 
 type Trackpoint struct {
@@ -98,15 +129,9 @@ type TrackpointSide struct {
 	MountDepthMM    float64 `yaml:"mount_depth_mm"`
 }
 
-type PCBs struct {
-	SwitchType string `yaml:"switch_type"`
-}
-
 type Render struct {
-	Fn            int  `yaml:"$fn"`
-	KeycapOutline bool `yaml:"keycap_outline"`
-	GenerateLeft  bool `yaml:"generate_left"`
-	GenerateRight bool `yaml:"generate_right"`
+	Fn    int  `yaml:"$fn"`
+	Debug bool `yaml:"debug,omitempty"`
 }
 
 // Load загружает YAML-конфиг из файла по указанному пути.

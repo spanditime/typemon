@@ -1,117 +1,204 @@
 # only mm is supported for now
-units: "mm"
+units: 
+  length: "mm"
+  angle: "deg"
 
 layout:
-  rows: 5
-  cols: 4
-  pinky_extra_home: true
+  rows: 4
+  cols: 5
 
-geometry:
-  base_tilt_angle_deg: 45.0
-  tent_angle_deg: 10.0
+switch_types:
+  regular: 
+    definition: choc_v1
+  five_way: 
+    definiton: generic_square_dip_switch
+    extra_args:
+      switch_size: [10.22,10.22,3]
+      hole_extra_depth: 2
+      dip_leg_hole_diameter: 1.5
+      dip_leg_holes_placements:
+        - [5.25,  0.35]
+        - [5.25,  3.15]
+        - [5.25,  -3.35]
+        - [-5.25, 0.35]
+        - [-5.25, 3.15]
+        - [-5.25, -3.35]
 
-  keywell_radius_mm: 120.0
-  keywell_depth_mm: 20.0
-
-columns_geometry:
-  col_spacing_x: 18.5
-  row_spacing_y: 18.0
-
-  row_heights_mm:
-    - 6.0
-    - 4.0
-    - 2.0
-    - 1.0
-    - 0.0
-
-  # origin column is the column of index finger
-  origin_column_index: 0
-  
-  # offsets are relative to the origin column
-  per_finger:
-    pinky:
-      offset_x: -5.0
-      offset_y: 2.0
-      offset_z: 3.0
-      tilt_x_deg: 8.0
-      tilt_y_deg: 12.0
-      splay_deg: 5.0
-    ring:
-      offset_x: -2.0
-      offset_y: 1.0
-      offset_z: 2.0
-      tilt_x_deg: 6.0
-      tilt_y_deg: 8.0
-      splay_deg: 3.0
-    middle:
-      offset_x: 0.0
-      offset_y: 0.0
-      offset_z: 0.0
-      tilt_x_deg: 4.0
-      tilt_y_deg: 5.0
-      splay_deg: 2.0
-    index:
-      offset_x: 3.0
-      offset_y: -1.0
-      offset_z: -1.0
-      tilt_x_deg: 2.0
-      tilt_y_deg: 0.0
-      splay_deg: 0.0
-
+keywell:
+  tilt_angle: 45.0
+  horizontal_radius: 120.0 # default is 120
+  vertical_radius: 100.0 # default is 100
+  center_offset:
+    x: 0 # default is 0
+    y: 0 # default is 0
+  inner_lip_size: 10 # default is 10
+  outer_lip_size: 10 # default is 10
+  index_finger_start_column: 1 # default is 1
+  # all modifiers are added at once, finger, column and row modifiers are just for convenience
+  modifiers:
+    finger: # to move whole rows, depending on the finger
+      index: 
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+      middle:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      ring:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+      pinky:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+    rows: # convinient modifiers per rows - tilt is around y axis
+      0:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      1:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      2:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      3:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      4:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+    columns: # convinient modifiers per columns - tilt is around z axis
+      0:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      1:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      2:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      3:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      4:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+      5:
+        offset:
+          x: 0 # default is 0
+          y: 0 # default is 0
+          z: 0 # default is 0
+        tilt: 0 # default is 0
+    matrix: # matrix modifiers - if you need to modify position or rotation of switches providing specific column and row index
+    - column: 0
+      row: 0
+      offset:
+        x: 0 # default is 0
+        y: 0 # default is 0
+        z: 0 # default is 0
+      rotation: 
+        x: 0 # default is 0
+        y: 0 # default is 0
+        z: 0 # default is 0
+      ignore_finger_modifiers: false # default is false
+      ignore_column_modifiers: false # default is false
+      ignore_row_modifiers: false # default is false
+      switch_type: "regular"
 thumb_clusters:
-  thumb_plane_angle_deg: 90.0
-  thumb_plane_tilt_deg: 10.0
+  thumb_plane_angle_deg: 90.0 # default is 0
+  thumb_plane_tilt_deg: 10.0 # default is 0
 
-  origin_column_index: 3
-  offset_x: 30.0
-  offset_y: -35.0
-  offset_z: -5.0
-
+  origin_column_index: 1 # default is the same as index_finger_start_column
+  offset_x: 30.0 # default is 0
+  offset_y: -35.0 # default is 0
+  offset_z: -5.0 # default is 0
 
   keys:
-    - id: "thumb_inner"
-      pos_x: -8.0
-      pos_y: 0.0
-      pos_z: 0.0
-    - id: "thumb_center"
-      pos_x: 0.0
-      pos_y: 2.0
-      pos_z: 0.0
-    - id: "thumb_outer"
-      pos_x: 8.0
-      pos_y: 4.0
-      pos_z: 0.0
-
-  left_side:
-    five_way_replaces: "thumb_center"
-    five_way_diameter_mm: 14.0
-    five_way_height_mm: 10.0
-
-trackpoint:
-  left_side:
-    # will be placed in between the origin column and next one by column_index
-    column_index: 3
-    # will be placed in between this column and the column above it by row_index
-    row_index: 0
-    enabled: true
-    offset_x: 0.0
-    offset_y: -5.0
-    offset_z: 5.0
-
-    hole_diameter_mm: 5.0
-    mount_diameter_mm: 8.0
-    mount_depth_mm: 4.0
-  right_side:
-    enabled: false
-
-pcbs:
-  # for now only choc_v1 is supported
-  switch_type: "choc_v1"
+    0:
+      offset:
+        x: -8.0 # default is 0
+        y: 0.0 # default is 0
+        z: 0.0 # default is 0
+      rotation:
+        x: 0 # default is 0
+        y: 0 # default is 0
+        z: 0 # default is 0
+      type: "regular" # default is "regular"
+    1:
+      offset:
+        x: 8.0 # default is 0
+        y: 0.0 # default is 0
+        z: 0.0 # default is 0
+      rotation:
+        x: 0 # default is 0
+        y: 0 # default is 0
+        z: 0 # default is 0
+      type: "regular" # default is "regular"
+    2:
+      offset:
+        x: 0.0 # default is 0
+        y: 0.0 # default is 0
+        z: 0.0 # default is 0
+      rotation:
+        x: 0 # default is 0
+        y: 0 # default is 0
+        z: 0 # default is 0
+      type: "regular" # default is "regular"
 
 render:
   $fn: 64
-  keycap_outline: true
-  generate_left: true
-  generate_right: true
 
+# todo: add trackpoint
+# trackpoint:
+#   left_side:
+#     # will be placed in between the origin column and next one by column_index
+#     column_index: 3
+#     # will be placed in between this column and the column above it by row_index
+#     row_index: 0
+#     enabled: true
+#     offset_x: 0.0
+#     offset_y: -5.0
+#     offset_z: 5.0
 
+#     hole_diameter_mm: 5.0
+#     mount_diameter_mm: 8.0
+#     mount_depth_mm: 4.0
+#   right_side:
+#     enabled: false

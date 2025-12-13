@@ -6,6 +6,12 @@ include <modules/geometry.scad>;
 /// GENERATED INCLUDES
 /////////////////////////////////////////////
 include <modules/switches/kailh_choc.scad>;
+include <modules/switches/square_dip.scad>;
+
+/////////////////////////////////////////////
+/// GENERATED DEBUG VALUES
+/////////////////////////////////////////////
+DEBUG_all_switch_types = ["regular", "five_way"];
 
 /////////////////////////////////////////////
 /// GENERATED CONFIGURATION VALUES
@@ -236,9 +242,9 @@ module switch_placeholder(size, type) {
     color("lightgray")
         mirror_if_right()
             if (type == "regular")
-                kailh_choc_switch_cutout(size);
+                kailh_choc_switch_cutout(plane_thickness_mm, size);
             else if (type == "five_way")
-                cylinder(h = size[2], r = size[0]/2, center = true);
+                generic_square_dip_switch_cutout(plane_thickness_mm, size);
 }
 /////////////////////////////////////////////
 /// RENDER ENTRY POINT

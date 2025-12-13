@@ -1,0 +1,16 @@
+filename: square_dip.scad
+module:  
+  name: generic_square_dip_switch_cutout
+  min_keycap_size:
+    width: 17.0
+    height: 18.0
+    depth: 3.0
+  extra_args: # declarations of extra arguments, along with their default values
+    switch_size: [5,5,2]
+    hole_extra_depth: 0.5
+    dip_leg_hole_diameter: 1.5
+    dip_leg_holes_placements:
+      - [-2.5,-2.5]
+      - [2.5,-2.5]
+      - [-2.5,2.5]
+      - [2.5,2.5]

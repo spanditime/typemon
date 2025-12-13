@@ -7,7 +7,7 @@ kailh_choc_switch_hole_size = [14.5, 13.8, 2.2+3.0]; // todo: change to actual d
 kailh_choc_above_lip_size = [15,15,0.8+2]; // with lip, switch upper body and the keycap
 
 
-module kailh_choc_switch_cutout(key_size) {
+module kailh_choc_switch_cutout(plane_thickness, key_size) {
     union() {
         difference() {
             translate([0, 0, -kailh_choc_switch_hole_size[2]/2])

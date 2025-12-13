@@ -1,0 +1,8 @@
+filename: kailh_choc.scad
+module: 
+  name: kailh_choc_switch_cutout
+  #extra_args: # not necessarily needed
+  min_keycap_size: # required
+    width: 17.0
+    height: 18.0
+    depth: 3.0
