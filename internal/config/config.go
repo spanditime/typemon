@@ -9,13 +9,13 @@ import (
 
 // Config описывает корневую структуру конфигурации клавиатуры.
 type Config struct {
-	Units         Units         `yaml:"units"`
-	Layout        Layout        `yaml:"layout"`
-	SwitchTypes   SwitchTypes   `yaml:"switch_types"`
-	Keywell       Keywell       `yaml:"keywell"`
-	ThumbClusters ThumbClusters `yaml:"thumb_clusters"`
-	Trackpoint    *Trackpoint   `yaml:"trackpoint,omitempty"`
-	Render        Render        `yaml:"render"`
+	Units         Units                       `yaml:"units"`
+	Layout        Layout                      `yaml:"layout"`
+	SwitchTypes   map[string]SwitchTypeConfig `yaml:"switch_types"`
+	Keywell       Keywell                     `yaml:"keywell"`
+	ThumbClusters ThumbClusters               `yaml:"thumb_clusters"`
+	Trackpoint    *Trackpoint                 `yaml:"trackpoint,omitempty"`
+	Render        Render                      `yaml:"render"`
 }
 
 type Units struct {
@@ -26,11 +26,6 @@ type Units struct {
 type Layout struct {
 	Rows int `yaml:"rows"`
 	Cols int `yaml:"cols"`
-}
-
-type SwitchTypes struct {
-	Regular SwitchTypeConfig `yaml:"regular"`
-	FiveWay SwitchTypeConfig `yaml:"five_way"`
 }
 
 type SwitchTypeConfig struct {
