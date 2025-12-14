@@ -92,7 +92,7 @@ var rightTemplate string
 
 func (g *generator) generateConfigFile() error {
 	// generate config scad file from template
-	tmpl, err := template.New("config").Parse(configTemplate)
+	tmpl, err := template.New("config").Funcs(funcMap).Parse(configTemplate)
 	if err != nil {
 		return errors.Join(errors.New("failed to parse config template"), err)
 	}

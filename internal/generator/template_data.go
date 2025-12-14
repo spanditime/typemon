@@ -2,6 +2,11 @@ package generator
 
 import (
 	"errors"
+	"fmt"
+	"maps"
+	"slices"
+	"strings"
+	"text/template"
 	"typemon/internal/config"
 	"typemon/internal/generator/utils"
 )
@@ -135,18 +140,15 @@ type templateData struct {
 	units        config.Units
 	Layout       config.Layout
 	switches     *switchRepository
+	SwitchTypes  []string
 	Geometry     config.GeometryConfig
 	Keywell      templateKeywell
 	Render       config.Render
 	ThumbCluster templateThumbCluster
 }
 
-func (t *templateData) AllSwitchTypes() []string {
-	types := make([]string, 0, len(t.switches.modules))
-	for name := range t.switches.modules {
-		types = append(types, name)
-	}
-	return types
+func AllSwitchTypes(switches *switchRepository) []string {
+	return slices.Collect(maps.Keys(switches.modules))
 }
 
 func (t *templateData) AllSwitchIncludes() []string {
@@ -155,6 +157,10 @@ func (t *templateData) AllSwitchIncludes() []string {
 		includes = append(includes, t.switches.modules[name].Filename)
 	}
 	return includes
+}
+
+func (t *templateData) AllSwitchModules() *map[string]*config.SwitchModuleDefinition {
+	return &t.switches.modules
 }
 
 func validateUnits(units config.Units) error {
@@ -220,9 +226,30 @@ func newTemplateData(config *config.Config, repo *switchRepository) (*templateDa
 		units:        config.Units,
 		Layout:       config.Layout,
 		switches:     switchRepo,
+		SwitchTypes:  AllSwitchTypes(switchRepo),
 		Geometry:     config.Geometry,
 		Keywell:      newTemplateKeywell(config.Keywell, config.Layout.Rows, config.Layout.Cols),
 		Render:       config.Render,
 		ThumbCluster: newTemplateThumbCluster(config.ThumbCluster),
 	}, nil
+}
+
+func scadFormat(value interface{}) string {
+	switch v := value.(type) {
+	case []interface{}:
+		var stringsArr []string
+		for _, item := range v {
+			stringsArr = append(stringsArr, scadFormat(item))
+		}
+		return fmt.Sprintf("[%s]", strings.Join(stringsArr, ", "))
+	case string:
+		return fmt.Sprintf("\"%s\"", v)
+	default:
+		return fmt.Sprintf("%v", v)
+	}
+}
+
+var funcMap = template.FuncMap{
+	"mapKeys":    maps.Keys[map[string]interface{}],
+	"scadFormat": scadFormat,
 }

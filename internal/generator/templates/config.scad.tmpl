@@ -14,7 +14,7 @@ include <modules/switches/{{.}}>;
 /////////////////////////////////////////////
 /// GENERATED DEBUG VALUES
 /////////////////////////////////////////////
-DEBUG_all_switch_types = [{{range .AllSwitchTypes}}"{{.}}",{{end}}];
+DEBUG_all_switch_types = [{{range .SwitchTypes}}"{{.}}",{{end}}];
 
 /////////////////////////////////////////////
 /// GENERATED CONFIGURATION VALUES
@@ -231,12 +231,20 @@ module switch_placeholder(size, type) {
             else if (type == "five_way")
                 generic_square_dip_switch_cutout(plane_thickness_mm, size);
 }
-/////////////////////////////////////////////
-/// RENDER ENTRY POINT
-/////////////////////////////////////////////
 
-// Apply base tilt angle to the entire keyboard surface.
-
-LEFT = true;
-
-main_body();
+module switch_placeholder(size, type) {
+    color("lightgray")
+        mirror_if_right()
+        {{- range $index, $switch_type := .SwitchTypes -}}
+            {{- with (index $.AllSwitchModules $switch_type)}}
+            {{if gt $index 0 -}}
+            else {{end -}}
+            if (type == "{{$switch_type}}")
+                {{.Module}}(plane_thickness_mm, size
+                {{- range $extra_arg_name, $extra_arg_value := .ExtraArgs -}},
+                    {{$extra_arg_name}}= {{- scadFormat $extra_arg_value -}}
+                {{- end -}}
+                );
+            {{- end -}}
+        {{- end}}
+}
