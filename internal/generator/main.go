@@ -43,8 +43,12 @@ func GeneratedOutConfigFilename(configName string) string {
 	return configName + outConfigExtension + GeneratedOutExtension()
 }
 
+func ConfigPath(configFilename string) string {
+	return filepath.Join(configDir, configFilename+configExtension)
+}
+
 func New(configFilename string) (*generator, error) {
-	path := filepath.Join(configDir, configFilename+configExtension)
+	path := ConfigPath(configFilename)
 	config, err := config.Load(path)
 	if err != nil {
 		return nil, errors.Join(errors.New("failed to load config"), err)

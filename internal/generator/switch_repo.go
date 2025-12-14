@@ -13,13 +13,13 @@ type switchRepository struct {
 }
 
 const (
-	switchModulesConfigDir = "configs/switches"
+	SwitchModulesConfigDir = "configs/switches"
 	switchModulesDir       = "modules/switches"
 	switchModulesExtension = ".scad"
 )
 
 func loadSwitchRepository() (*switchRepository, error) {
-	modules, err := config.LoadSwitchModules(switchModulesConfigDir)
+	modules, err := config.LoadSwitchModules(SwitchModulesConfigDir)
 	if err != nil {
 		return nil, errors.Join(errors.New("failed to load switch modules"), err)
 	}
