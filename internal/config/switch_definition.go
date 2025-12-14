@@ -25,7 +25,7 @@ type MinKeycapSize struct {
 func LoadSwitchModules(path string) (map[string]*SwitchModuleDefinition, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return nil, errors.Join(errors.New("failed to read switch modules directory"), err)
+		return nil, errors.Join(errors.New("failed to read switch modules directory: "+path), err)
 	}
 	modules := make(map[string]*SwitchModuleDefinition)
 	for _, file := range files {

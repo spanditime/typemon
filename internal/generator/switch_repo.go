@@ -13,12 +13,13 @@ type switchRepository struct {
 }
 
 const (
+	switchModulesConfigDir = "configs/switches"
 	switchModulesDir       = "modules/switches"
 	switchModulesExtension = ".scad"
 )
 
 func loadSwitchRepository() (*switchRepository, error) {
-	modules, err := config.LoadSwitchModules(switchModulesDir)
+	modules, err := config.LoadSwitchModules(switchModulesConfigDir)
 	if err != nil {
 		return nil, errors.Join(errors.New("failed to load switch modules"), err)
 	}
@@ -48,10 +49,32 @@ func (r *switchRepository) AddModule(name string, module *config.SwitchModuleDef
 		return errors.Join(errors.New("invalid switch module"), errors.New("switch module name: "+name))
 	}
 	// check that filename exists
-	path := filepath.Join(OutDir, switchModulesDir, module.Filename+switchModulesExtension)
+	path := filepath.Join(OutDir, switchModulesDir, module.Filename)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return errors.Join(errors.New("switch module file not found: "+path), errors.New("switch module name: "+name))
 	}
 	r.modules[name] = module
 	return nil
+}
+
+func OverrideModule(module *config.SwitchModuleDefinition, extraArgs map[string]interface{}) (*config.SwitchModuleDefinition, error) {
+	newModule := &config.SwitchModuleDefinition{
+		Filename:      module.Filename,
+		Module:        module.Module,
+		MinKeycapSize: module.MinKeycapSize,
+		ExtraArgs:     make(map[string]interface{}),
+	}
+	for key, value := range extraArgs {
+		if _, ok := module.ExtraArgs[key]; !ok {
+			return nil, errors.New("extra argument not found in module: " + key)
+		}
+		newModule.ExtraArgs[key] = value
+	}
+	// copy over extra args that are not overridden
+	for key, value := range module.ExtraArgs {
+		if _, ok := newModule.ExtraArgs[key]; !ok {
+			newModule.ExtraArgs[key] = value
+		}
+	}
+	return newModule, nil
 }

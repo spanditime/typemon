@@ -1,26 +1,23 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
+	"typemon/internal/generator"
 
 	"github.com/spf13/cobra"
-
-	"typemon/internal/config"
 )
 
 const (
-	defaultConfigPath = "configs/default.yml"
-	defaultPart       = "full"
+	defaultConfigPath = "default"
 )
 
 var (
-	cfgPath string
-	part    string
-	scadOut string
-	stepOut string
+	configName string
 )
 
 func main() {
@@ -30,8 +27,7 @@ func main() {
 	}
 
 	// Global flags
-	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", defaultConfigPath, "path to YAML config file")
-	rootCmd.PersistentFlags().StringVar(&part, "part", defaultPart, "keyboard part to generate (e.g. left, right, full)")
+	rootCmd.PersistentFlags().StringVarP(&configName, "config", "c", defaultConfigPath, "YAML config file name (without extension)")
 
 	// Команда generate
 	genCmd := &cobra.Command{
@@ -39,7 +35,6 @@ func main() {
 		Short: "Generate OpenSCAD model from config",
 		RunE:  runGenerate,
 	}
-	genCmd.Flags().StringVarP(&scadOut, "scad", "s", "", "output SCAD file path (default: scad/<config>.<part>.scad)")
 
 	// Команда render
 	renderCmd := &cobra.Command{
@@ -47,10 +42,14 @@ func main() {
 		Short: "Generate OpenSCAD model and STEP files (stub)",
 		RunE:  runRender,
 	}
-	renderCmd.Flags().StringVarP(&scadOut, "scad", "s", "", "output SCAD file path (default: scad/<config>.<part>.scad)")
-	renderCmd.Flags().StringVarP(&stepOut, "out", "o", "", "output STEP file path (default: models/<config>.<part>.step)")
 
-	rootCmd.AddCommand(genCmd, renderCmd)
+	clearArtefactsCmd := &cobra.Command{
+		Use:   "clear-artefacts",
+		Short: "Clear artefacts from the project",
+		RunE:  runClearArtefacts,
+	}
+
+	rootCmd.AddCommand(genCmd, renderCmd, clearArtefactsCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalf("command failed: %v", err)
@@ -58,66 +57,50 @@ func main() {
 }
 
 func runGenerate(cmd *cobra.Command, args []string) error {
-	cfgFile := cfgPath
-	if cfgFile == "" {
-		cfgFile = defaultConfigPath
-	}
-
-	if part == "" {
-		part = defaultPart
-	}
-
-	if scadOut == "" {
-		scadOut = defaultScadPath(cfgFile, part)
-	}
-
-	_, err := config.Load(cfgFile)
+	generator, err := generator.New(configName)
 	if err != nil {
-		return fmt.Errorf("load config: %w", err)
+		return errors.Join(errors.New("failed to create generator"), err)
 	}
-
-	// TODO: реализовать генерацию SCAD-файла на основе шаблонов и конфигурации.
-	fmt.Printf("generate: config=%s part=%s scad=%s (generation not implemented yet)\n", cfgFile, part, scadOut)
+	err = generator.Generate()
+	if err != nil {
+		return errors.Join(errors.New("failed to generate"), err)
+	}
+	fmt.Println("generated successfully")
 	return nil
 }
 
 func runRender(cmd *cobra.Command, args []string) error {
-	cfgFile := cfgPath
-	if cfgFile == "" {
-		cfgFile = defaultConfigPath
-	}
-
-	if part == "" {
-		part = defaultPart
-	}
-
-	if scadOut == "" {
-		scadOut = defaultScadPath(cfgFile, part)
-	}
-	if stepOut == "" {
-		stepOut = defaultStepPath(cfgFile, part)
-	}
-
-	_, err := config.Load(cfgFile)
-	if err != nil {
-		return fmt.Errorf("load config: %w", err)
-	}
-	fmt.Printf("cfgFile: %s\n", cfgFile)
-	fmt.Printf("part: %s\n", part)
-	fmt.Printf("scadOut: %s\n", scadOut)
-	fmt.Printf("stepOut: %s\n", stepOut)
-
-	// TODO: реализовать генерацию SCAD и STEP-файлов.
-	fmt.Printf("render: config=%s part=%s scad=%s out=%s (render not implemented yet)\n", cfgFile, part, scadOut, stepOut)
 	return nil
 }
 
-func defaultScadPath(cfgFile, part string) string {
-	base := strings.TrimSuffix(filepath.Base(cfgFile), filepath.Ext(cfgFile))
-	return filepath.Join("scad", fmt.Sprintf("%s.%s.scad", base, part))
-}
-
-func defaultStepPath(cfgFile, part string) string {
-	base := strings.TrimSuffix(filepath.Base(cfgFile), filepath.Ext(cfgFile))
-	return filepath.Join("models", fmt.Sprintf("%s.%s.step", base, part))
+func runClearArtefacts(cmd *cobra.Command, args []string) error {
+	// delete all *.g.scad files in the scad directory
+	scadDir := generator.OutDir
+	files, err := os.ReadDir(scadDir)
+	if err != nil {
+		return errors.Join(errors.New("read scad directory"), err)
+	}
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), generator.GeneratedOutExtension()) {
+			err = os.Remove(filepath.Join(scadDir, file.Name()))
+			if err != nil {
+				return errors.Join(errors.New("remove scad file"), err)
+			}
+		}
+	}
+	// delete all *.g.step files in the models directory
+	modelsDir := generator.RenderDir
+	files, err = os.ReadDir(modelsDir)
+	if err != nil {
+		return errors.Join(errors.New("read models directory"), err)
+	}
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), generator.GeneratedRenderExtension()) {
+			err = os.Remove(filepath.Join(modelsDir, file.Name()))
+			if err != nil {
+				return errors.Join(errors.New("remove model file"), err)
+			}
+		}
+	}
+	return nil
 }

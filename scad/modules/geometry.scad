@@ -14,7 +14,7 @@ module keywell_switches() {
     for (c = [0 : num_cols - 1]) {
         for (r = [0 : num_rows - 1]) {
             multmatrix(M_key_main(c, r))
-                switch_placeholder(switch_size, matrix_keys[c][r][2]);
+                switch_placeholder(switch_size, matrix_keys[r][c][2]);
         }
     }
 }

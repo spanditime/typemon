@@ -9,13 +9,22 @@ import (
 
 // Config описывает корневую структуру конфигурации клавиатуры.
 type Config struct {
-	Units         Units                       `yaml:"units"`
-	Layout        Layout                      `yaml:"layout"`
-	SwitchTypes   map[string]SwitchTypeConfig `yaml:"switch_types"`
-	Keywell       Keywell                     `yaml:"keywell"`
-	ThumbClusters ThumbClusters               `yaml:"thumb_clusters"`
-	Trackpoint    *Trackpoint                 `yaml:"trackpoint,omitempty"`
-	Render        Render                      `yaml:"render"`
+	Units        Units                       `yaml:"units"`
+	Layout       Layout                      `yaml:"layout"`
+	Geometry     GeometryConfig              `yaml:"geometry"`
+	SwitchTypes  map[string]SwitchTypeConfig `yaml:"switch_types"`
+	Keywell      Keywell                     `yaml:"keywell"`
+	ThumbCluster ThumbCluster                `yaml:"thumb_cluster"`
+	Render       Render                      `yaml:"render"`
+	// Trackpoint    *Trackpoint                 `yaml:"trackpoint,omitempty"`
+}
+
+type GeometryConfig struct {
+	PlaneThickness          float64 `yaml:"plane_thickness"`
+	SupportRadius           float64 `yaml:"support_radius"`
+	KeywellElevation        float64 `yaml:"keywell_elevation"`
+	WallBaseThickness       float64 `yaml:"wall_base_thickness"`
+	WallCenterOffsetPercent float64 `yaml:"wall_center_offset_percent"`
 }
 
 type Units struct {
@@ -91,14 +100,11 @@ type MatrixModifier struct {
 	SwitchType            string   `yaml:"switch_type"`
 }
 
-type ThumbClusters struct {
-	ThumbPlaneAngleDeg float64          `yaml:"thumb_plane_angle_deg"`
-	ThumbPlaneTiltDeg  float64          `yaml:"thumb_plane_tilt_deg"`
-	OriginColumnIndex  int              `yaml:"origin_column_index"`
-	OffsetX            float64          `yaml:"offset_x"`
-	OffsetY            float64          `yaml:"offset_y"`
-	OffsetZ            float64          `yaml:"offset_z"`
-	Keys               map[int]ThumbKey `yaml:"keys"`
+type ThumbCluster struct {
+	OriginColumnIndex int              `yaml:"origin_column_index"`
+	Offset            Offset           `yaml:"offset"`
+	Rotation          Rotation         `yaml:"rotation"`
+	Keys              map[int]ThumbKey `yaml:"keys"`
 }
 
 type ThumbKey struct {
@@ -107,22 +113,22 @@ type ThumbKey struct {
 	Type     string   `yaml:"type"`
 }
 
-type Trackpoint struct {
-	LeftSide  TrackpointSide `yaml:"left_side"`
-	RightSide TrackpointSide `yaml:"right_side"`
-}
+// type Trackpoint struct {
+// 	LeftSide  TrackpointSide `yaml:"left_side"`
+// 	RightSide TrackpointSide `yaml:"right_side"`
+// }
 
-type TrackpointSide struct {
-	ColumnIndex     int     `yaml:"column_index"`
-	RowIndex        int     `yaml:"row_index"`
-	Enabled         bool    `yaml:"enabled"`
-	OffsetX         float64 `yaml:"offset_x"`
-	OffsetY         float64 `yaml:"offset_y"`
-	OffsetZ         float64 `yaml:"offset_z"`
-	HoleDiameterMM  float64 `yaml:"hole_diameter_mm"`
-	MountDiameterMM float64 `yaml:"mount_diameter_mm"`
-	MountDepthMM    float64 `yaml:"mount_depth_mm"`
-}
+// type TrackpointSide struct {
+// 	ColumnIndex     int     `yaml:"column_index"`
+// 	RowIndex        int     `yaml:"row_index"`
+// 	Enabled         bool    `yaml:"enabled"`
+// 	OffsetX         float64 `yaml:"offset_x"`
+// 	OffsetY         float64 `yaml:"offset_y"`
+// 	OffsetZ         float64 `yaml:"offset_z"`
+// 	HoleDiameterMM  float64 `yaml:"hole_diameter_mm"`
+// 	MountDiameterMM float64 `yaml:"mount_diameter_mm"`
+// 	MountDepthMM    float64 `yaml:"mount_depth_mm"`
+// }
 
 type Render struct {
 	Fn    int  `yaml:"$fn"`
